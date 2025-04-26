@@ -1,4 +1,5 @@
 import Task from "./components/Task";
+import AddTask from "./components/AddTask";
 import { useState } from "react";
 
 const TasksList = [
@@ -24,6 +25,34 @@ const TasksList = [
 function App() {
   const [tasks, setTasks] = useState(TasksList);
 
+  document
+    .getElementById("addtask")
+    ?.addEventListener("submit", function (event) {
+      event.preventDefault();
+    });
+
+  function addTask() {
+    const title = document.getElementById("title")?.innerHTML;
+    const description = document.getElementById("description")?.innerHTML;
+    const form = document.getElementById("addtask") as HTMLFormElement;
+    
+    if (title != null && description != null) {
+      const newTask = {
+        id: tasks.length + 1,
+        title: title,
+        description: description,
+        status: "to-do",
+      };
+      const newTasks = [...tasks];
+      newTasks.push(newTask);
+      setTasks(newTasks);
+      form.reset();
+       
+    }else{
+      alert("Error: Title or description is empty");
+    }
+  }
+
   function nextStatus(id: number, status: string) {
     const copyTasks = [...tasks];
     const task = copyTasks.find((item) => item.id == id);
@@ -47,9 +76,11 @@ function App() {
                   key={task.id}
                   title={task.title}
                   description={task.description}
+                  status={task.status}
                   next={() => nextStatus(task.id, "in-progress")}
                 />
               ))}
+            <AddTask add={addTask} />
           </div>
           <div className="bg-blue-600 w-xl">
             <h1 className="text-3xl p-3">In progress</h1>
@@ -60,6 +91,7 @@ function App() {
                   key={task.id}
                   title={task.title}
                   description={task.description}
+                  status={task.status}
                   next={() => nextStatus(task.id, "done")}
                 />
               ))}
@@ -73,6 +105,7 @@ function App() {
                   key={task.id}
                   title={task.title}
                   description={task.description}
+                  status={task.status}
                   next={() => nextStatus(task.id, "to-do")}
                 />
               ))}
