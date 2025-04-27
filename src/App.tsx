@@ -1,6 +1,6 @@
 import Task from "./components/Task";
 import AddTask from "./components/AddTask";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const TasksList = [
   { id: 1, title: "Task 1", description: "Description 1", status: "to-do" },
@@ -24,7 +24,12 @@ const TasksList = [
 
 function App() {
   const [tasks, setTasks] = useState(TasksList);
-
+  const newTask = useRef({
+    id: 0,
+    title: "",
+    description: "",
+    status: "",
+  });
   document
     .getElementById("addtask")
     ?.addEventListener("submit", function (event) {
@@ -32,25 +37,12 @@ function App() {
     });
 
   function addTask() {
-    const title = document.getElementById("title")?.innerHTML;
-    const description = document.getElementById("description")?.innerHTML;
-    const form = document.getElementById("addtask") as HTMLFormElement;
-    
-    if (title != null && description != null) {
-      const newTask = {
-        id: tasks.length + 1,
-        title: title,
-        description: description,
-        status: "to-do",
-      };
-      const newTasks = [...tasks];
-      newTasks.push(newTask);
-      setTasks(newTasks);
-      form.reset();
-       
-    }else{
-      alert("Error: Title or description is empty");
-    }
+    const copy = [...tasks];
+    newTask.current.status="to-do"
+    newTask.current.id =tasks.length + 1
+    copy.push(newTask.current);
+    setTasks(copy);
+    console.log(newTask.current)
   }
 
   function nextStatus(id: number, status: string) {
@@ -80,7 +72,7 @@ function App() {
                   next={() => nextStatus(task.id, "in-progress")}
                 />
               ))}
-            <AddTask add={addTask} />
+            <AddTask add={addTask} ref={newTask.current} />
           </div>
           <div className="bg-blue-600 w-xl">
             <h1 className="text-3xl p-3">In progress</h1>
